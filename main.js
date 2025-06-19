@@ -9,12 +9,14 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
+// Fungsi tanya input
 const askQuestion = (query) => {
   return new Promise((resolve) => {
     rl.question(query, (answer) => resolve(answer));
   });
 };
 
+// Fungsi validasi input jumlah upload
 async function getValidCount() {
   while (true) {
     const answer = await askQuestion('How many files to upload per wallet? ');
@@ -24,15 +26,16 @@ async function getValidCount() {
   }
 }
 
+// Fungsi utama
 async function main() {
   try {
     logger.banner();
 
-    // Load keys & proxy
+    // Load wallet dan proxy
     loadPrivateKeys();
     loadProxies();
 
-    // Network check
+    // Cek koneksi ke network
     logger.loading('Checking network status...');
     const network = await provider.getNetwork();
     if (BigInt(network.chainId) !== BigInt(CHAIN_ID)) {
@@ -40,12 +43,10 @@ async function main() {
     }
     logger.success(`Connected to network: chainId ${network.chainId}`);
 
-    const isNetworkSynced = await checkNetworkSync();
-    if (!isNetworkSynced) {
-      throw new Error('Network is not synced');
-    }
+    const isSynced = await checkNetworkSync();
+    if (!isSynced) throw new Error('Network is not synced');
 
-    // Tampilkan wallet list
+    // Tampilkan semua wallet
     console.log('\x1b[36mAvailable wallets:\x1b[0m');
     privateKeys.forEach((key, index) => {
       const wallet = initializeWallet(index);
@@ -53,19 +54,18 @@ async function main() {
     });
     console.log();
 
-    // Input jumlah file
+    // Input jumlah file per wallet
     const count = await getValidCount();
 
-    // Jalankan upload
+    // Mulai proses upload
     await handleUploadFlow(count);
 
     // Selesai
     rl.close();
     logger.bye('Process completed ~ Bye bang !');
     process.exit(0);
-
-  } catch (error) {
-    logger.critical(`Main process error: ${error.message}`);
+  } catch (err) {
+    logger.critical(`Main process error: ${err.message}`);
     rl.close();
     process.exit(1);
   }
