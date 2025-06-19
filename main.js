@@ -4,21 +4,17 @@ const axios = require('axios');
 const readline = require('readline');
 const crypto = require('crypto');
 const fs = require('fs');
-const gradient = require('gradient-string');
 const { HttpsProxyAgent } = require('https-proxy-agent');
-
-// Buat pastel style
-const pastel = gradient(['#FFD1DC', '#D1FFFF', '#D1FFD1', '#FFFACD']); // pink, cyan, green, lemon
 
 const colors = {
   reset: "\x1b[0m",
-  bold: "\x1b[1m",
-  cyan: pastel,    // jadi gradient pastel
-  green: pastel,
-  yellow: pastel,
-  red: pastel,
-  white: pastel,
-  gray: pastel
+  cyan: "\x1b[36m",
+  green: "\x1b[32m",
+  yellow: "\x1b[33m",
+  red: "\x1b[31m",
+  white: "\x1b[37m",
+  gray: "\x1b[90m",
+  bold: "\x1b[1m"
 };
 
 const logger = {
@@ -508,7 +504,7 @@ async function main() {
     });
 
     rl.on('close', () => {
-      logger.bye('Process completed');
+      logger.bye('Process completed ~ Bye bang !');
     });
 
   } catch (error) {
