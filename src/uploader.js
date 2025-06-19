@@ -1,11 +1,7 @@
-// src/uploader.js
-
-const readline = require('readline');
 const { logger, delay } = require('./config');
-const { provider, loadPrivateKeys, loadProxies, privateKeys, initializeWallet } = require('./wallet');
-const { fetchRandomImage, prepareImageData, uploadToStorage } = require('./upload'); // ganti dari './uploader'
+const { provider, privateKeys, initializeWallet } = require('./wallet');
+const { fetchRandomImage, prepareImageData, uploadToStorage } = require('./upload');
 
-// Fungsi hanya untuk sync check
 async function checkNetworkSync() {
   try {
     logger.loading('Checking network sync...');
@@ -18,7 +14,6 @@ async function checkNetworkSync() {
   }
 }
 
-// Fungsi utama upload
 async function handleUploadFlow(count) {
   const total = count * privateKeys.length;
   logger.info(`Starting ${total} uploads (${count} per wallet)`);
