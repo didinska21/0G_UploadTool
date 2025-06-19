@@ -1,6 +1,6 @@
 require('dotenv').config();
 const readline = require('readline');
-const { logger, CHAIN_ID, delay } = require('./src/config');
+const { logger, CHAIN_ID } = require('./src/config');
 const { loadPrivateKeys, loadProxies, privateKeys, initializeWallet, provider } = require('./src/wallet');
 const { checkNetworkSync, handleUploadFlow } = require('./src/uploader');
 
@@ -9,21 +9,14 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-const askQuestion = (query) => {
-  return new Promise((resolve) => {
-    rl.question(query, (answer) => resolve(answer));
-  });
-};
+const askQuestion = (query) => new Promise(resolve => rl.question(query, resolve));
 
 async function main() {
   try {
     logger.banner();
-
-    // Load keys & proxy
     loadPrivateKeys();
     loadProxies();
 
-    // Network check
     logger.loading('Checking network status...');
     const network = await provider.getNetwork();
     if (BigInt(network.chainId) !== BigInt(CHAIN_ID)) {
@@ -31,12 +24,9 @@ async function main() {
     }
     logger.success(`Connected to network: chainId ${network.chainId}`);
 
-    const isNetworkSynced = await checkNetworkSync();
-    if (!isNetworkSynced) {
-      throw new Error('Network is not synced');
-    }
+    const isSynced = await checkNetworkSync();
+    if (!isSynced) throw new Error('Network not synced');
 
-    // Tampilkan wallet list
     console.log('\x1b[36mAvailable wallets:\x1b[0m');
     privateKeys.forEach((key, index) => {
       const wallet = initializeWallet(index);
@@ -44,26 +34,20 @@ async function main() {
     });
     console.log();
 
-    // Ask input count
-    const answer = await askQuestion('How many files to upload per wallet? ');
-    const count = parseInt(answer);
+    const input = await askQuestion('How many files to upload per wallet? ');
+    const count = parseInt(input);
     if (isNaN(count) || count <= 0) {
-      logger.error('Invalid number. Please enter a number greater than 0.');
-      rl.close();
-      process.exit(1);
-      return;
+      logger.error('Invalid input. Must be a number > 0.');
+      rl.close(); process.exit(1);
     }
 
-    // Jalankan upload
     await handleUploadFlow(count);
-
-    // Selesai
     rl.close();
-    logger.bye('Process completed ~ Bye bang !');
+    logger.bye('Upload completed ~ Bye bang!');
     process.exit(0);
 
-  } catch (error) {
-    logger.critical(`Main process error: ${error.message}`);
+  } catch (err) {
+    logger.critical(`Main process error: ${err.message}`);
     rl.close();
     process.exit(1);
   }
