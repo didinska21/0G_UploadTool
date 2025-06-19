@@ -1,0 +1,25 @@
+{
+  "name": "0g-upload-tool",
+  "version": "1.0.0",
+  "description": "Auto upload bot for 0G Storage (Galileo Testnet)",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "keywords": [
+    "0g",
+    "airdrop",
+    "storage",
+    "uploader",
+    "auto-bot"
+  ],
+  "author": "Didinska",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.10.0",
+    "https-proxy-agent": "^7.0.2",
+    "ora": "^6.3.1"
+  }
+}
