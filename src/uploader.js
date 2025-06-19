@@ -1,8 +1,8 @@
 // main.js
 const readline = require('readline');
-const { logger, delay } = require('./src/config');
-const { provider, loadPrivateKeys, loadProxies, privateKeys, initializeWallet } = require('./src/wallet');
-const { fetchRandomImage, prepareImageData, uploadToStorage } = require('./src/uploader');
+const { logger, delay } = require('./config');
+const { provider, loadPrivateKeys, loadProxies, privateKeys, initializeWallet } = require('./wallet');
+const { fetchRandomImage, prepareImageData, uploadToStorage } = require('./uploader');
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
