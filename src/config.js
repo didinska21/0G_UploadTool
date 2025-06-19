@@ -1,7 +1,10 @@
-// src/config.js
 const { ethers } = require('ethers');
 const ora = require('ora');
+const figlet = require('figlet');
+const gradient = require('gradient-string');
+const chalk = require('chalk');
 
+// ====== Color Map for CLI Output ======
 const colors = {
   reset: "\x1b[0m",
   cyan: "\x1b[36m",
@@ -13,6 +16,7 @@ const colors = {
   bold: "\x1b[1m"
 };
 
+// ====== Spinner & Logger Handler ======
 let activeSpinner = null;
 
 const logger = {
@@ -32,19 +36,28 @@ const logger = {
     if (msg) console.log(`${colors.cyan}${msg}${colors.reset}`);
     console.log(`${colors.cyan}${line}${colors.reset}\n`);
   },
-  banner: () => {
-    if (activeSpinner) activeSpinner.stop();
-    console.log(`${colors.cyan}${colors.bold}`);
-    console.log(`==================================================`);
-    console.log(` 0G Storage Scan Auto Bot - Airdrop Insiders`);
-    console.log(`==================================================${colors.reset}\n`);
-  },
   loading: (msg) => { if (activeSpinner) activeSpinner.stop(); activeSpinner = ora(msg).start(); },
   done: (msg) => { if (activeSpinner) activeSpinner.succeed(msg); activeSpinner = null; },
   fail: (msg) => { if (activeSpinner) activeSpinner.fail(msg); activeSpinner = null; },
-  stop: () => { if (activeSpinner) activeSpinner.stop(); activeSpinner = null; }
+  stop: () => { if (activeSpinner) activeSpinner.stop(); activeSpinner = null; },
+  
+  banner: () => {
+    if (activeSpinner) activeSpinner.stop();
+    console.clear();
+
+    const ascii = figlet.textSync("0G", {
+      font: "ANSI Shadow",
+      horizontalLayout: "default",
+      verticalLayout: "default"
+    });
+
+    console.log(gradient.pastel.multiline(ascii));
+    console.log(chalk.white.bold('               UPLOAD TOOL'));
+    console.log(chalk.gray.bold('        build by : t.me/didinska\n'));
+  }
 };
 
+// ====== Constants & Config ======
 const CHAIN_ID = 16601;
 const RPC_URL = 'https://evmrpc-testnet.0g.ai';
 const CONTRACT_ADDRESS = '0x5f1d96895e442fc0168fa2f9fb1ebef93cb5035e';
@@ -58,13 +71,16 @@ const IMAGE_SOURCES = [
   { url: 'https://loremflickr.com/800/600', responseType: 'arraybuffer' }
 ];
 
+// ====== Ethers Compatibility ======
 const isEthersV6 = ethers.version.startsWith('6');
 const parseUnits = isEthersV6 ? ethers.parseUnits : ethers.utils.parseUnits;
 const parseEther = isEthersV6 ? ethers.parseEther : ethers.utils.parseEther;
 const formatEther = isEthersV6 ? ethers.formatEther : ethers.utils.formatEther;
 
+// ====== Utility ======
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
+// ====== Exported ======
 module.exports = {
   logger,
   CHAIN_ID,
