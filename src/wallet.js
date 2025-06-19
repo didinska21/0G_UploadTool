@@ -1,4 +1,3 @@
-// src/wallet.js
 require('dotenv').config();
 const fs = require('fs');
 const { ethers } = require('ethers');
@@ -26,63 +25,42 @@ function isValidPrivateKey(key) {
 }
 
 function loadPrivateKeys() {
-  try {
-    let index = 1;
-    let key = process.env[`PRIVATE_KEY_${index}`];
+  let index = 1;
+  let key = process.env[`PRIVATE_KEY_${index}`] || process.env.PRIVATE_KEY;
 
-    if (!key && index === 1 && process.env.PRIVATE_KEY) {
-      key = process.env.PRIVATE_KEY;
+  while (key) {
+    if (isValidPrivateKey(key)) {
+      privateKeys.push(key);
+    } else {
+      logger.error(`Invalid private key at PRIVATE_KEY_${index}`);
     }
+    index++;
+    key = process.env[`PRIVATE_KEY_${index}`];
+  }
 
-    while (key) {
-      if (isValidPrivateKey(key)) {
-        privateKeys.push(key);
-      } else {
-        logger.error(`Invalid private key at PRIVATE_KEY_${index}`);
-      }
-      index++;
-      key = process.env[`PRIVATE_KEY_${index}`];
-    }
-
-    if (privateKeys.length === 0) {
-      logger.critical('No valid private keys found in .env file');
-      process.exit(1);
-    }
-
-    logger.success(`Loaded ${privateKeys.length} private key(s)`);
-  } catch (error) {
-    logger.critical(`Failed to load private keys: ${error.message}`);
+  if (privateKeys.length === 0) {
+    logger.critical('No valid private keys found');
     process.exit(1);
   }
+
+  logger.success(`Loaded ${privateKeys.length} private key(s)`);
 }
 
 function loadProxies() {
-  try {
-    if (fs.existsSync(PROXY_FILE)) {
-      const data = fs.readFileSync(PROXY_FILE, 'utf8');
-      proxies = data.split('\n')
-        .map(line => line.trim())
-        .filter(line => line && !line.startsWith('#'));
-
-      if (proxies.length > 0) {
-        logger.info(`Loaded ${proxies.length} proxies from ${PROXY_FILE}`);
-      } else {
-        logger.warn(`No proxies found in ${PROXY_FILE}`);
-      }
-    } else {
-      logger.warn(`Proxy file ${PROXY_FILE} not found`);
-    }
-  } catch (error) {
-    logger.error(`Failed to load proxies: ${error.message}`);
+  if (fs.existsSync(PROXY_FILE)) {
+    const data = fs.readFileSync(PROXY_FILE, 'utf8');
+    proxies = data.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+    if (proxies.length > 0) logger.info(`Loaded ${proxies.length} proxies`);
+    else logger.warn(`No proxies found in ${PROXY_FILE}`);
+  } else {
+    logger.warn(`Proxy file ${PROXY_FILE} not found`);
   }
 }
 
 function extractProxyIP(proxy) {
   try {
-    let cleanProxy = proxy.replace(/^https?:\/\//, '').replace(/.*@/, '');
-    const ip = cleanProxy.split(':')[0];
-    return ip || cleanProxy;
-  } catch (error) {
+    return proxy.replace(/^https?:\/\//, '').replace(/.*@/, '').split(':')[0];
+  } catch {
     return proxy;
   }
 }
@@ -119,9 +97,9 @@ function createAxiosInstance(userAgent = null) {
   return require('axios').create(config);
 }
 
-function initializeWallet() {
-  const privateKey = getNextPrivateKey();
-  return new ethers.Wallet(privateKey, provider);
+function initializeWallet(indexOrKey) {
+  const pk = typeof indexOrKey === 'number' ? privateKeys[indexOrKey] : indexOrKey;
+  return new ethers.Wallet(pk, provider);
 }
 
 module.exports = {
