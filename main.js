@@ -219,11 +219,11 @@ async function proceed(count) {
   for (let walletIndex = 0; walletIndex < privateKeys.length; walletIndex++) {
     currentKeyIndex = walletIndex;
     const wallet = initializeWallet();
-    logger.section(\`Processing Wallet #\${walletIndex + 1} [\${wallet.address}]\`);
+    logger.section(`Processing Wallet #\${walletIndex + 1} [\${wallet.address}]`);
 
     for (let i = 1; i <= count; i++) {
       const uploadNumber = (walletIndex * count) + i;
-      logger.process(\`Upload \${uploadNumber} (Wallet #\${walletIndex + 1}, File #\${i})\`);
+      logger.process(`Upload \${uploadNumber} (Wallet #\${walletIndex + 1}, File #\${i})`);
 
       try {
         const imageBuffer = await fetchRandomImage();
@@ -231,11 +231,11 @@ async function proceed(count) {
         // NOTE: implementasi uploadToStorage harus ada di part2 atau import
         await uploadToStorage(imageData, wallet, walletIndex);
         successful++;
-        logger.success(\`Upload \${uploadNumber} completed\`);
+        logger.success(`Upload \${uploadNumber} completed`);
         await delay(3000);
       } catch (error) {
         failed++;
-        logger.error(\`Upload \${uploadNumber} failed: \${error.message}\`);
+        logger.error(`Upload \${uploadNumber} failed: \${error.message}`);
         await delay(5000);
       }
     }
