@@ -18,7 +18,7 @@ Alat otomatis untuk mengunggah data/file ke jaringan berbasis blockchain dengan 
 
 ```bash
 git clone https://github.com/didinska21/0G_UploadTool.git
-cd 0G_UploadTool
+cd 0G_UploadTool```
 
 Jika belum install npm, jalankan:
 
