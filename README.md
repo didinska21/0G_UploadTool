@@ -22,20 +22,17 @@ cd 0G_UploadTool```
 
 Jika belum install npm, jalankan:
 
-```
-apt install npm```
+```apt install npm```
 
 Lalu install dependensi:
 
-```
-npm install```
+```npm install```
 
 Jika muncul pertanyaan Y/n, pilih Y dan tunggu hingga proses selesai.
 
 Kalau gagal atau belum semua module terpasang, ulangi:
 
-```
-npm install```
+```npm install```
 
 
 ---
